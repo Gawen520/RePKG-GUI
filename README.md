@@ -28,9 +28,3 @@
 - 项目生成时会自动从 `D:\CodeFile\repkg\RePKG\bin\Debug\net472` 目录复制所有 RePKG 相关文件到输出目录
 - 请确保该源目录存在且包含完整的 RePKG 文件
 - 如果需要更改源目录，请编辑 `.csproj` 文件中的 `CopyRePKGFiles` 目标
-
-## 写到最后
-
-可执行文件链接：https://wwe.lanzoui.com/b01ogn8eh 密码:d76o
-
-程序基于RePKG的开源项目 https://github.com/notscuffed/repkg
