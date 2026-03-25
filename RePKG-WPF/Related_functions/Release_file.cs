@@ -1,49 +1,28 @@
 ﻿using System.IO;
-using System.Text;
 
 namespace RePKG_WPF.Related_functions
 {
     class Release_file
     {
         /// <summary>
-        /// 释放到嵌入程序中的资源文件
+        /// 检查 RePKG.exe 是否存在于指定目录
         /// </summary>
-        /// <param name="byDll">资源文件字节组</param>
-        /// <param name="file">释放文件路径</param>
-        /// <returns>文件是否释放成功</returns>
-        public static bool file(byte[] byDll,string file)
+        /// <param name="directory">RePKG.exe 所在目录</param>
+        /// <returns>文件是否存在</returns>
+        public static bool CheckRePKG(string directory)
         {
-            //byte[] byDll = Encoding.Default.GetBytes(Properties.Resources.RePKG);//获取嵌入文件的字节数组  
-            //string strPath = Environment.GetEnvironmentVariable("TMP") + @"\MC_OFF.reg";//设置释放路径
-            using (FileStream fs = new FileStream(file, FileMode.Create))//开始写入文件流
-            {
-                fs.Write(byDll, 0, byDll.Length);
-            }
-
-            if (File.Exists(file))//检索文件是否正确被释放
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            string repkgPath = Path.Combine(directory, "RePKG.exe");
+            return File.Exists(repkgPath);
         }
+
         /// <summary>
-        /// 执行释放文件
+        /// 获取 RePKG.exe 的完整路径
         /// </summary>
-        /// <param name="temp">释放文件路径</param>
-        /// <returns>释放全部成功释放</returns>
-        public static bool File_List(string temp)
+        /// <param name="directory">RePKG.exe 所在目录</param>
+        /// <returns>RePKG.exe 的完整路径</returns>
+        public static string GetRePKGPath(string directory)
         {
-            if(file(Properties.Resources.RePKG,temp + @"\RePKG.exe") == true && file(Encoding.Default.GetBytes(Properties.Resources.THIRD_PARTY_NOTICES),temp + @"\THIRD-PARTY-NOTICES.txt") == true )
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return Path.Combine(directory, "RePKG.exe");
         }
     }
 }

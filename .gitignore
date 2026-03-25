@@ -338,3 +338,6 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+# RePKG-Core (有独立的 Git 管理)
+RePKG-Core/
