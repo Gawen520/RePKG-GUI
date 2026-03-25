@@ -23,7 +23,7 @@ namespace RePKG_WPF
         static string RePKG_Directory = "";//RePKG.exe 所在目录
         static List<string> UserCmdList = new List<string>();//用户选择的命令
         static readonly string UserCmd1 = " --osi -n";
-        static readonly string UserCmd2 = " --overwrite";
+        static readonly string UserCmd2 = " --no-tex-convert";
 
         /// <summary>
         /// 添加日志并自动滚动到底部
@@ -37,12 +37,10 @@ namespace RePKG_WPF
         public MainWindow()
         {
             InitializeComponent();
-            AppendLog($"[{DateTime.Now}]: RePKG-WPF 程序启动  Copyright © xcz  2026");
-            AppendLog($"\n[{DateTime.Now}]: 获取临时文件夹：{Temp_file}");
-            AppendLog($"\n[{DateTime.Now}]: 获取桌面路径：{Desktop_file}");
-
             RePKG_Directory = AppDomain.CurrentDomain.BaseDirectory;
             AppendLog($"\n[{DateTime.Now}]: RePKG 目录：{RePKG_Directory}");
+            AppendLog($"\n[{DateTime.Now}]: 获取临时文件夹：{Temp_file}");
+            AppendLog($"\n[{DateTime.Now}]: 获取桌面路径：{Desktop_file}");
 
             if (!Related_functions.Release_file.CheckRePKG(RePKG_Directory))
             {
