@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
+using Newtonsoft.Json;
 
 
 namespace RePKG_WPF
@@ -18,12 +19,59 @@ namespace RePKG_WPF
         static readonly string Temp_file = Environment.GetEnvironmentVariable("TMP");
         static readonly string Desktop_file = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         static readonly string OutputRootDir = "小红车壁纸解包目录";
-        static string OutputRootPath = Path.Combine(Desktop_file, OutputRootDir);
+        static readonly string ConfigPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json");
+        static string OutputRootPath = LoadOutputPath();
         static readonly ArrayList Number_file = new ArrayList();
         static string RePKG_Directory = "";//RePKG.exe 所在目录
         static List<string> UserCmdList = new List<string>();//用户选择的命令
         static readonly string UserCmd1 = " --osi -n";
         static readonly string UserCmd2 = " --no-tex-convert";
+
+        /// <summary>
+        /// 从配置文件加载输出路径
+        /// </summary>
+        private static string LoadOutputPath()
+        {
+            try
+            {
+                if (File.Exists(ConfigPath))
+                {
+                    var configContent = File.ReadAllText(ConfigPath);
+                    var config = JsonConvert.DeserializeObject<Dictionary<string, string>>(configContent);
+                    if (config != null && config.ContainsKey("OutputPath"))
+                    {
+                        return config["OutputPath"];
+                    }
+                }
+            }
+            catch
+            {
+                // 如果读取失败，使用默认路径
+            }
+
+            // 默认输出到桌面
+            return Path.Combine(Desktop_file, OutputRootDir);
+        }
+
+        /// <summary>
+        /// 保存输出路径到配置文件
+        /// </summary>
+        private static void SaveOutputPath(string path)
+        {
+            try
+            {
+                var config = new Dictionary<string, string>
+                {
+                    { "OutputPath", path }
+                };
+                var json = JsonConvert.SerializeObject(config, Formatting.Indented);
+                File.WriteAllText(ConfigPath, json);
+            }
+            catch
+            {
+                // 如果保存失败，不做处理
+            }
+        }
 
         /// <summary>
         /// 添加日志并自动滚动到底部
@@ -41,6 +89,7 @@ namespace RePKG_WPF
             AppendLog($"\n[{DateTime.Now}]: RePKG 目录：{RePKG_Directory}");
             AppendLog($"\n[{DateTime.Now}]: 获取临时文件夹：{Temp_file}");
             AppendLog($"\n[{DateTime.Now}]: 获取桌面路径：{Desktop_file}");
+            AppendLog($"\n[{DateTime.Now}]: 加载输出路径：{OutputRootPath}");
 
             if (!Related_functions.Release_file.CheckRePKG(RePKG_Directory))
             {
@@ -106,6 +155,10 @@ namespace RePKG_WPF
                     OutputRootPath = Path.Combine(dialog.FileName, OutputRootDir);
                     tb_dir.Text = OutputRootPath;
                     AppendLog($"\n[{DateTime.Now}]: 重新定向输出文件夹：{OutputRootPath}");
+
+                    // 保存新的输出路径到配置文件
+                    SaveOutputPath(OutputRootPath);
+                    AppendLog($"\n[{DateTime.Now}]: 已保存输出路径到配置文件");
                 }
             }
             catch
