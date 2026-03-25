@@ -26,8 +26,8 @@
 
         <!-- 第一行：两个复选框（居中） -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,10,10,10">
-            <CheckBox x:Name="chkNoTexConvert" Content="不转换图片" Margin="0,0,20,0" FontSize="13"/>
-            <CheckBox x:Name="chkOnlyImages" Content="只提取图片" FontSize="13"/>
+            <CheckBox x:Name="chkNoTexConvert" Content="不转换图片" Margin="0,0,20,0" FontSize="13" Checked="ChkNoTexConvert_Checked" Unchecked="ChkNoTexConvert_Checked"/>
+            <CheckBox x:Name="chkOnlyImages" Content="只提取图片" FontSize="13" Checked="ChkOnlyImages_Checked" Unchecked="ChkOnlyImages_Checked"/>
         </StackPanel>
 
         <!-- 第二行：已选择文件列表 -->

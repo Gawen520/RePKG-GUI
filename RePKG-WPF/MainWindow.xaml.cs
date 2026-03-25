@@ -23,7 +23,7 @@ namespace RePKG_WPF
         static string OutputRootPath = LoadOutputPath();
         static readonly ArrayList Number_file = new ArrayList();
         static string RePKG_Directory = "";//RePKG.exe 所在目录
-        static List<string> UserCmdList = new List<string>();//用户选择的命令
+        static readonly List<string> UserCmdList = new List<string>();//用户选择的命令
         static readonly string UserCmd1 = " --osi -n";
         static readonly string UserCmd2 = " --no-tex-convert";
 
@@ -54,6 +54,36 @@ namespace RePKG_WPF
         }
 
         /// <summary>
+        /// 从配置文件加载复选框状态
+        /// </summary>
+        private void LoadCheckboxStates()
+        {
+            try
+            {
+                if (File.Exists(ConfigPath))
+                {
+                    var configContent = File.ReadAllText(ConfigPath);
+                    var config = JsonConvert.DeserializeObject<Dictionary<string, string>>(configContent);
+                    if (config != null)
+                    {
+                        if (config.ContainsKey("NoTexConvert") && bool.TryParse(config["NoTexConvert"], out bool noTexConvert))
+                        {
+                            chkNoTexConvert.IsChecked = noTexConvert;
+                        }
+                        if (config.ContainsKey("OnlyImages") && bool.TryParse(config["OnlyImages"], out bool onlyImages))
+                        {
+                            chkOnlyImages.IsChecked = onlyImages;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // 如果读取失败，保持默认状态
+            }
+        }
+
+        /// <summary>
         /// 保存输出路径到配置文件
         /// </summary>
         private static void SaveOutputPath(string path)
@@ -63,6 +93,28 @@ namespace RePKG_WPF
                 var config = new Dictionary<string, string>
                 {
                     { "OutputPath", path }
+                };
+                var json = JsonConvert.SerializeObject(config, Formatting.Indented);
+                File.WriteAllText(ConfigPath, json);
+            }
+            catch
+            {
+                // 如果保存失败，不做处理
+            }
+        }
+
+        /// <summary>
+        /// 保存复选框状态到配置文件
+        /// </summary>
+        private void SaveCheckboxStates()
+        {
+            try
+            {
+                var config = new Dictionary<string, string>
+                {
+                    { "OutputPath", OutputRootPath },
+                    { "NoTexConvert", chkNoTexConvert.IsChecked.ToString() },
+                    { "OnlyImages", chkOnlyImages.IsChecked.ToString() }
                 };
                 var json = JsonConvert.SerializeObject(config, Formatting.Indented);
                 File.WriteAllText(ConfigPath, json);
@@ -90,6 +142,10 @@ namespace RePKG_WPF
             AppendLog($"\n[{DateTime.Now}]: 获取临时文件夹：{Temp_file}");
             AppendLog($"\n[{DateTime.Now}]: 获取桌面路径：{Desktop_file}");
             AppendLog($"\n[{DateTime.Now}]: 加载输出路径：{OutputRootPath}");
+
+            // 加载复选框状态
+            LoadCheckboxStates();
+            AppendLog($"\n[{DateTime.Now}]: 加载复选框状态完成");
 
             if (!Related_functions.Release_file.CheckRePKG(RePKG_Directory))
             {
@@ -165,6 +221,19 @@ namespace RePKG_WPF
             {
                 // 用户取消选择文件夹，不做任何处理
             }
+        }
+
+        // 复选框状态改变时保存配置
+        private void ChkNoTexConvert_Checked(object sender, RoutedEventArgs e)
+        {
+            SaveCheckboxStates();
+            AppendLog($"\n[{DateTime.Now}]: 已保存复选框状态：不转换图片={(chkNoTexConvert.IsChecked ?? false)}");
+        }
+
+        private void ChkOnlyImages_Checked(object sender, RoutedEventArgs e)
+        {
+            SaveCheckboxStates();
+            AppendLog($"\n[{DateTime.Now}]: 已保存复选框状态：只提取图片={(chkOnlyImages.IsChecked ?? false)}");
         }
         //开始输出
         private void Start_Click(object sender, RoutedEventArgs e)
